@@ -16,12 +16,17 @@ class RoomController {
   }
   
   static createRoom(req, res, next){
-    const { name } = req.body
+    // const { name } = req.body
+    console.log('masuuk');
     const maxPlayer = 2
     const UserId = req.currentUser.id
-
-    Room.create({ name, maxPlayer, UserId })
+    Room.findAll()
+      .then(rooms => {
+        console.log({rooms});
+        return Room.create({ name: `Game Room ${rooms.length + 1}`, maxPlayer, UserId })
+      })
       .then(room => {
+        console.log({room});
         res.status(201).json(room)
       })
       .catch(err => {
@@ -30,16 +35,21 @@ class RoomController {
   }
 
   static joinRoom(req, res, next){
+    const UserId = req.currentUser.id
+    const RoomId = +req.params.id
     const option = {
       where: {
-        id: +req.params.id
+        RoomId
       }
     }
     
-    Room.findOne(option)
+    UserRoom.findAll(option)
       .then(room => {
-
-        return UserRoom.create({ UserId: room.UserId, RoomId: room.id })
+        if (room.length < 2) {
+          return UserRoom.create({ UserId, RoomId })
+        } else {
+          throw { message: 'sorry room full' }
+        }
       })
       .then(UserRoom => {
         res.status(200).json(UserRoom)
@@ -61,6 +71,27 @@ class RoomController {
         res.status(200).json({ msg: "Delete Success" })
       })
       .catch(err => {
+        next(err)
+      })
+  }
+
+  static getRoomUser(req, res, next) {
+    console.log('masuuuk');
+    const RoomId = +req.params.id
+    console.log({RoomId});
+    const option = {
+      where: {
+        RoomId
+      }
+    }
+
+    UserRoom.findAll(option)
+      .then(rooms => {
+        console.log({rooms});
+        res.status(200).json(rooms)
+      })
+      .catch(err => {
+        console.log({err});
         next(err)
       })
   }
