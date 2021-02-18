@@ -23,7 +23,7 @@ class UserController {
         const {id, name} = user
         const access_token = generateToken({ id, name })
 
-        res.status(200).json({ access_token })
+        res.status(200).json({ access_token, id, name })
       })
       .catch(err => {
         next(err)
