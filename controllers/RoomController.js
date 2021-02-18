@@ -33,13 +33,16 @@ class RoomController {
     const option = {
       where: {
         id: +req.params.id
-      },
-      include: [User]
+      }
     }
     
     Room.findOne(option)
       .then(room => {
-        res.status(200).json(room)
+
+        return UserRoom.create({ UserId: room.UserId, RoomId: room.id })
+      })
+      .then(UserRoom => {
+        res.status(200).json(UserRoom)
       })
       .catch(err => {
         next(err)
