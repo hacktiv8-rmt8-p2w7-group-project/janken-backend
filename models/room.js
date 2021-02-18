@@ -25,6 +25,9 @@ module.exports = (sequelize, DataTypes) => {
           msg: "Name is required"
         }
       }
+    },
+    maxPlayer: {
+      type: DataTypes.INTEGER
     }
   }, {
     sequelize,
