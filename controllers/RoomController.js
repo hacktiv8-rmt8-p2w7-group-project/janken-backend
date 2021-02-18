@@ -1,4 +1,4 @@
-const { Room, User } = require('../models/index')
+const { Room, User, UserRoom } = require('../models/index')
 
 class RoomController {
   static showAll(req, res, next){
@@ -18,17 +18,10 @@ class RoomController {
   static createRoom(req, res, next){
     const { name } = req.body
     const maxPlayer = 2
+    const UserId = req.currentUser.id
 
-    Room.create({ name, maxPlayer })
+    Room.create({ name, maxPlayer, UserId })
       .then(room => {
-        const newUserRoom = {
-          UserId: req.currentUser.id,
-          RoomId: room.id
-        }
-
-        return UserRoom.create(newUserRoom)
-      })
-      .then(userroom => {
         res.status(201).json(room)
       })
       .catch(err => {

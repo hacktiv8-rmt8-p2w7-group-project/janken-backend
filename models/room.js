@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Room.belongsTo(models.User)
+
       Room.belongsToMany(models.User, {
         through: models.UserRoom
       })
@@ -28,7 +30,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     maxPlayer: {
       type: DataTypes.INTEGER
-    }
+    },
+    UserId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Room',
