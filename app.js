@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: false }))
 
 // Routes
 app.use(routes)
-// app.use(errorHandlers)
+app.use(errorHandlers)
 
 // Listener
 app.listen(port, () => console.log(`Listening on port ${port}`))
