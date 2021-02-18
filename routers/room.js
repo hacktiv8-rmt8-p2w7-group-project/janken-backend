@@ -8,7 +8,9 @@ router.post('/', RoomController.createRoom)
 
 router.delete('/:id', authorize, RoomController.deleteRoom)
 
-router.get('/:id', RoomController.joinRoom)
+router.post('/:id', RoomController.joinRoom)
+
+router.get('/:id', RoomController.getRoomUser)
 
 
 module.exports = router

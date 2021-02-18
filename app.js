@@ -6,6 +6,7 @@ const express = require("express")
 const cors = require("cors")
 const routes = require("./routers/router")
 const errorHandlers = require("./middlewares/errorHandler")
+const { on } = require("events")
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -35,14 +36,20 @@ app.use(errorHandlers)
 let users = []
 let connections = []
 let choices = []
+let rooms = {}
 
 // Socket.io
 io.on("connection", (socket) => {
     connections.push(socket)
     console.log("Connected: sockets connected", connections.length)
 
-    socket.on("send message", (data) => {
-        socket.emit("new message", { msg: data, user: socket.name })
+    socket.on('joinRooms', (user, roomId) => {
+      if (rooms[roomId]) {
+        rooms[roomId].push(user)
+      } else {
+        rooms[roomId] = [user]
+      }
+      socket.broadcast.emit('onPlayerJoin', rooms)
     })
 
     socket.on("player choice", (name, choice) => {
@@ -50,6 +57,24 @@ io.on("connection", (socket) => {
         console.log(name, choice)
 
         if (choices.length == 2) {
+          let respon = ''
+          const win = {
+            scissors: 'paper',
+            paper: 'rock',
+            rock: 'scissors'
+          };
+
+          if (choices[0].choice === choices[1].choice) {
+            respon = 'draw'
+          } else {
+            const winner = win[choices[0].choice] === choices[1].choice ? choices[0].name : choices[1].name;
+            respon = `Winner: ${winner}`
+          }
+
+          console.log(`Winner: ${winner}`)
+
+          socket.broadcast.emit('result', respon)
+
             switch (choices[0]["choice"]) {
                 case "rock":
                     switch (choices[1]["choice"]) {
